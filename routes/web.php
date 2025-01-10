@@ -29,4 +29,6 @@ Route::middleware('auth')->group(function () {
 Route::resource('chirps', ChirpController::class)
     ->only(['index', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
+
+Route::post('chirps/generate', [ChirpController::class, 'generateAIChirps'])->name('generate.chirps');
 require __DIR__ . '/auth.php';

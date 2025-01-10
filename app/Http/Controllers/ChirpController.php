@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\OpenAIService;
 use App\Models\Chirp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -83,5 +84,17 @@ class ChirpController extends Controller
         $chirp->delete();
 
         return redirect(route("chirps.index"));
+    }
+    protected $openAIService;
+
+    public function __construct(OpenAIService $openAIService)
+    {
+        $this->openAIService = $openAIService;
+    }
+
+    public function generateAIChirps()
+    {
+        $chirps = $this->openAIService->generateChirps();
+        return response()->json($chirps['choices']);
     }
 }

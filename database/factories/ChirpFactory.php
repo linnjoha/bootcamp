@@ -17,8 +17,8 @@ class ChirpFactory extends Factory
     public function definition()
     {
         return [
-            'message' => $this->faker->sentence, // Skapar ett random meddelande
-            'user_id' => User::factory(),        // Kopplar till en ny användare
+            'message' => $this->faker->sentence,
+            'user_id' => User::factory(),
         ];
     }
 }
