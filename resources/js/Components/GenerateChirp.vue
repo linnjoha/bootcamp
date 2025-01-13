@@ -1,6 +1,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue'
@@ -19,8 +20,13 @@ const generateChirps = async () => {
 
   try {
     const response = await axios.post(route('generate.chirps'));
-    const obj = response.data.pop().message.content;
-    chirps.value = obj.split(':');
+    console.log(response);
+  const arr= ["funny", "neutral", "serious"].map((state)=>{
+  const message = response.data[state].choices.pop().message.content
+  console.log(message);
+return message
+})
+    chirps.value = arr
     loading.value = false;
     modalOpen.value = true;
   } catch (error) {
@@ -38,6 +44,7 @@ const closeModal = () => {
 const saveChirp = async (chirp) => {
   try {
     await axios.post(route('chirps.store'), { message: chirp });
+    window.location.href = route('chirps.index');
     closeModal();
   } catch (error) {
     console.error('Error saving chirp:', error);

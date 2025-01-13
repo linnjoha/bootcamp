@@ -95,6 +95,6 @@ class ChirpController extends Controller
     public function generateAIChirps()
     {
         $chirps = $this->openAIService->generateChirps();
-        return response()->json($chirps['choices']);
+        return response()->json($chirps);
     }
 }

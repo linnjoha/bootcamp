@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
+
 class OpenAIService
 {
     protected $apiKey;
@@ -17,17 +18,52 @@ class OpenAIService
 
     public function generateChirps(): array
     {
+        $states = ['funny', 'neutral', 'serious'];
+        $responses = $this->generateTweetsForStates($states);
+        return $responses;
+    }
+
+
+    public function generateTweet(string $state)
+    {
+        $prompt = "Generate a $state tweet, maximum length 255.";
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $this->apiKey,
         ])->post($this->baseUrl, [
             'model' => 'gpt-3.5-turbo',
             'messages' => [
-                ['role' => 'user', 'content' => 'Generate 3 example tweets in seperate messages with different levels of seriousness. Level 1 is humorous, Level 2 is neutral, Level 3 is serious.respond only with 3 messages separated by colon, example format: message1:message2:message3'],
+                ['role' => 'user', 'content' => $prompt],
             ],
-
         ]);
 
+        if ($response->failed()) {
+            throw new \Exception('OpenAI API request failed: ' . $response->body());
+        }
+
         return $response->json();
+    }
+
+    /**
+     * Generate tweets for multiple states.
+     *
+     * @param array $states
+     * @return array
+     */
+    public function generateTweetsForStates(array $states): array
+    {
+        $responses = [];
+
+        foreach ($states as $state) {
+            try {
+                $tweet = $this->generateTweet($state);
+                $responses[$state] = $tweet;
+            } catch (\Exception $e) {
+                $responses[$state] = 'Error: ' . $e->getMessage();
+            }
+        }
+
+        return $responses;
     }
 }
